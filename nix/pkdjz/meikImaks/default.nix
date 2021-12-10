@@ -1,4 +1,4 @@
-{ kor, lib, src, meikPkgs, hob }:
+{ kor, lib, src, meikPkgs, hob, system }:
 let
   inherit (builtins) readFile concatStringsSep mapAttrs elemAt
     length;
@@ -115,18 +115,17 @@ let
       mkImaksModuleEl = writeText "mkImaksmodule.el"
         (readFile ./mkImaksModule.el);
 
-      packagesUsed = mkUsePackages Elisp;
+      packagesUsed = (mkUsePackages Elisp)
+        ++ [ overiddenEmacsPackages.use-package ];
 
     in
-    stdenv.mkDerivation {
-      pname = name + "-el";
-      version = kor.cortHacString Elisp;
+    derivation {
+      inherit name system packagesUsed;
       src = writeText "${name}.el" Elisp;
-      dontUnpack = true;
-      depsHostHost = [ emacs ] ++ packagesUsed;
-      buildPhase = ''
-        emacs --batch --load ${mkImaksModuleEl}
-      '';
+      srcHash = kor.mkStringHash Elisp;
+      builder = emacs + /bin/emacs;
+      args = [ "--batch" "--load" mkImaksModuleEl ];
+      __structuredAttrs = true;
     };
 
 in

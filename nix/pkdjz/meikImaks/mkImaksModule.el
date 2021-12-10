@@ -1,7 +1,8 @@
-(use-package json)
+(require 'json)
 
 (defun mkModule (attrs)
   (print attrs))
 
-(let (attrs (json-read-file "./attrs.json"))
+(let* ((JsonAttrsFile (concat pwd "./.attrs.json"))
+       (attrs (json-read-file JsonAttrsFile)))
   (mkModule attrs))
