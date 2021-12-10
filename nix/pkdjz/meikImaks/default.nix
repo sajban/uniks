@@ -1,11 +1,15 @@
 { kor, lib, src, meikPkgs, hob }:
 let
+  inherit (builtins) readFile concatStringsSep mapAttrs elemAt
+    length;
+  inherit (kor) mesydj nameValuePair mapAttrs';
+
   emacs-overlay = src;
   pkgs = meikPkgs { overlays = [ emacs-overlay.overlay ]; };
-  inherit (pkgs) writeText emacsPackagesFor emacsPgtkGcc;
+  inherit (pkgs) stdenv writeText emacsPackagesFor emacsPgtkGcc;
 
   emacs = emacsPgtkGcc;
-  emacsPackages = emacsPackagesFor emacsPgtkGcc;
+  emacsPackages = emacsPackagesFor emacs;
   inherit (emacsPackages) elpaBuild withPackages melpaBuild
     trivialBuild;
 
@@ -63,12 +67,72 @@ let
       };
   };
 
-  overiddenEmacsPackages = emacsPackages // customPackages;
+  mkModuleFromFile = FileName: FileType:
+    assert mesydj (FileType == "regular")
+      "mkModuleFromFile: unexpected FileType";
+    let
+      nameAndFileExtension = lib.splitString "." FileName;
+      possibleModuleName = elemAt nameAndFileExtension 0;
+      possibleFileExtension = elemAt nameAndFileExtension 1;
+      name = assert mesydj
+        ((length nameAndFileExtension) == 2 &&
+          (possibleFileExtension == "el"))
+        "ImaksModuleName: Incorrect FileName";
+        possibleModuleName;
+
+      Elisp = (readFile (./modules + "/${FileName}"));
+
+      imaksModule = mkImaksModule { inherit name Elisp; };
+
+    in
+    nameValuePair name imaksModule;
+
+  mapFilesToModules = Directory:
+    mapAttrs' mkModuleFromFile Directory;
+
+  imaksModules = mapFilesToModules (builtins.readDir ./modules);
+
+  overiddenEmacsPackages = emacsPackages // customPackages // imaksModules;
+
+  mkUsePackagesNames = Elisp:
+    kor.unique
+      (parsePackagesFromUsePackage {
+        configText = Elisp;
+        alwaysEnsure = true;
+      });
+
+  mkPackageError = name:
+    builtins.trace
+      "Emacs package ${name}, declared wanted with use-package, not found."
+      null;
+
+  findPackage = name: overiddenEmacsPackages.${name}  or (mkPackageError name);
+
+  mkUsePackages = Elisp: map findPackage (mkUsePackagesNames Elisp);
+
+  mkImaksModule = { name, Elisp }:
+    let
+      mkImaksModuleEl = writeText "mkImaksmodule.el"
+        (readFile ./mkImaksModule.el);
+
+      packagesUsed = mkUsePackages Elisp;
+
+    in
+    stdenv.mkDerivation {
+      pname = name + "-el";
+      version = kor.cortHacString Elisp;
+      src = writeText "${name}.el" Elisp;
+      dontUnpack = true;
+      depsHostHost = [ emacs ] ++ packagesUsed;
+      buildPhase = ''
+        emacs --batch --load ${mkImaksModuleEl}
+      '';
+    };
 
 in
 { kriozon, krimyn, profile }:
 let
-  inherit (builtins) readFile concatStringsSep;
+  inherit (krimyn.spinyrz) izUniksDev saizAtList iuzColemak;
 
   launcher = "selectrum"; # TODO profile
 
@@ -81,41 +145,19 @@ let
       (load-theme ${imaksTheme} t)
     '';
 
-  commonPackagesEl = readFile ./packages.el;
-  launcherCommonEl = readFile ./vertico-selectrum-common.el;
-  launcherStyleEl = (if (launcher == "vertico") then
-    (readFile ./vertico.el) else (readFile ./selectrum.el));
+  launcherModule = with imaksModules;
+    if (launcher == "selectrum")
+    then imaksSelectrum else imaksVertico;
 
-  packagesEl = concatStringsSep "\n"
-    [ commonPackagesEl launcherCommonEl launcherStyleEl ];
+  saizModule = with saizAtList; with imaksModules;
+    if max then imaksMax
+    else if med then imaksMed
+    else if min then imaksMin
+    else imaksCore;
 
-  usePackagesNames = kor.unique
-    (parsePackagesFromUsePackage {
-      configText = packagesEl;
-      alwaysEnsure = true;
-    });
+  imaksModulesUsed = [ saizModule launcherModule ];
 
-  mkPackageError = name:
-    builtins.trace
-      "Emacs package ${name}, declared wanted with use-package, not found."
-      null;
-
-  findPackage = name: overiddenEmacsPackages.${name}  or (mkPackageError name);
-  usePackages = map findPackage usePackagesNames;
-
-  elpaHeader = readFile ./elpaHeader.el;
-  elpaFooter = ";;; default.el ends here";
-  defaultEl = elpaHeader + initEl + packagesEl + elpaFooter;
-
-  defaultElPackage = elpaBuild {
-    pname = "default-el";
-    version = kor.cortHacString defaultEl;
-    src = writeText "default.el" defaultEl;
-    packageRequires = usePackages;
-  };
-
-  imaksPackages = usePackages ++ [ defaultElPackage ];
-  imaks = withPackages imaksPackages;
+  imaks = withPackages imaksModulesUsed;
 
 in
 imaks

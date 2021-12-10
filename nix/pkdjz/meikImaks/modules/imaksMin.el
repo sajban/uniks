@@ -1,27 +1,35 @@
-(use-package affe
-  :after (consult)
-  :config
-  (defun affe-orderless-regexp-compiler (input _type)
-    (setq input (orderless-pattern-compiler input))
-    (cons input (lambda (str) (orderless--highlight input str))))
-  (setq affe-regexp-compiler #'affe-orderless-regexp-compiler))
+(use-package imaksCore)
+
+(use-package clojure-mode)
 
 (use-package consult
   :custom
   (consult-preview-key (kbd "M-.")))
 
-(use-package consult-flycheck)
+(use-package deadgrep)
 
-(use-package consult-ghq
-  :after (consult)
-  :custom
-  (consult-ghq-find-function #'consult-find)
-  (consult-ghq-grep-function #'consult-grep))
+(use-package dockerfile-mode :mode "Dockerfile")
 
-(use-package embark)
+(use-package doom-modeline
+  :config
+  (doom-modeline-mode 1))
 
-(use-package marginalia
-  :config (marginalia-mode))
+(use-package find-file-in-project
+  :custom (ffip-use-rust-fd t))
+
+(use-package lispy
+  :hook ((emacs-lisp-mode lisp-mode)
+	 . lispy-mode))
+
+(use-package magit
+  :config
+  (put 'magit-clean 'disabled nil))
+
+(use-package nix-mode
+  :mode "\\.nix\\'")
+
+(use-package notmuch :commands notmuch)
+(use-package notmuch-maildir)
 
 (use-package orderless
   :config
@@ -39,3 +47,10 @@
   (orderless-style-dispatchers
    '(flex-if-twiddle without-if-bang))
   (orderless-matching-styles '(orderless-regexp)))
+
+(use-package unicode-fonts
+  :config (unicode-fonts-setup))
+ 
+(use-package which-key
+  :config
+  (which-key-mode))
