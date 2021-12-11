@@ -1,21 +1,14 @@
-{ kor, lib, src, meikPkgs, hob, system }:
+{ kor, lib, src, emacs, hob }:
 let
-  inherit (builtins) readFile concatStringsSep mapAttrs elemAt
-    length;
+  inherit (builtins) readFile concatStringsSep mapAttrs elemAt length;
   inherit (kor) mesydj nameValuePair mapAttrs';
+  inherit (emacs) mkUsePackages mkElispDerivation;
+  inherit (emacs.pkgs) stdenv writeText;
+  inherit (emacs.parseLib) parsePackagesFromUsePackage;
 
-  emacs-overlay = src;
-  pkgs = meikPkgs { overlays = [ emacs-overlay.overlay ]; };
-  inherit (pkgs) stdenv writeText emacsPackagesFor emacsPgtkGcc;
-
-  emacs = emacsPgtkGcc;
-  emacsPackages = emacsPackagesFor emacs;
+  emacsPackages = emacs.currentPackages;
   inherit (emacsPackages) elpaBuild withPackages melpaBuild
     trivialBuild;
-
-  parseLib = import (emacs-overlay + /parse.nix)
-    { inherit pkgs lib; };
-  inherit (parseLib) parsePackagesFromUsePackage;
 
   customPackages = {
     base16-theme =
@@ -50,7 +43,7 @@ let
         inherit src;
         commit = src.rev;
         version = "0.1";
-        recipe = pkgs.writeText "recipe" ''
+        recipe = writeText "recipe" ''
           (shen-mode
            :repo "NHALX/shen-mode"
            :fetcher github)
@@ -94,38 +87,25 @@ let
 
   overiddenEmacsPackages = emacsPackages // customPackages // imaksModules;
 
-  mkUsePackagesNames = Elisp:
-    kor.unique
-      (parsePackagesFromUsePackage {
-        configText = Elisp;
-        alwaysEnsure = true;
-      });
-
-  mkPackageError = name:
-    builtins.trace
-      "Emacs package ${name}, declared wanted with use-package, not found."
-      null;
-
-  findPackage = name: overiddenEmacsPackages.${name}  or (mkPackageError name);
-
-  mkUsePackages = Elisp: map findPackage (mkUsePackagesNames Elisp);
-
   mkImaksModule = { name, Elisp }:
     let
       mkImaksModuleEl = writeText "mkImaksmodule.el"
         (readFile ./mkImaksModule.el);
 
-      packagesUsed = (mkUsePackages Elisp)
-        ++ [ overiddenEmacsPackages.use-package ];
+      packagesUsed = (mkUsePackages {
+        inherit Elisp;
+        elispPackages = overiddenEmacsPackages;
+      })
+      ++ [ overiddenEmacsPackages.use-package ];
+
+      src = writeText "${name}.el" Elisp;
 
     in
-    derivation {
-      inherit name system packagesUsed;
-      src = writeText "${name}.el" Elisp;
-      srcHash = kor.mkStringHash Elisp;
-      builder = emacs + /bin/emacs;
-      args = [ "--batch" "--load" mkImaksModuleEl ];
-      __structuredAttrs = true;
+    mkElispDerivation {
+      inherit name src;
+      version = kor.mkStringHash Elisp;
+      ElispDependencies = packagesUsed;
+      ElispBuild = mkImaksModuleEl;
     };
 
 in

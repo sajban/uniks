@@ -51,12 +51,9 @@
 
           mkKrimynHomz = krimynNeim: krimyn:
             let
-              emacsPkgs = uyrld.pkdjz.meikPkgs {
-                overlays = [ emacs-overlay.overlay ];
-              };
               pkgs =
                 if (krimyn.stail == "emacs")
-                then emacsPkgs
+                then uyrld.pkdjz.emacs.pkgs
                 else nixpkgs.legacyPackages.${system};
               home-manager = hob.home-manager.mein;
               mkProfileHom = profileName: profile:
@@ -97,16 +94,17 @@
           inherit (pkgs) symlinkJoin linkFarm;
           mkUyrld = import ./nix/mkUyrld.nix;
           uyrld = mkUyrld { inherit pkgs kor lib system hob uniks; };
-          inherit (uyrld.pkdjz) shen-ecl-bootstrap;
+          inherit (uyrld.pkdjz) aski shen-ecl-bootstrap;
           shen = shen-ecl-bootstrap;
 
           legacyPackages = pkgs;
-          defaultPackage = shen;
+          packages = { inherit pkgs; } // uyrld;
+          defaultPackage = aski.current;
 
           devShell = pkgs.mkShell {
             inputsFrom = [ ];
             UNIKSBOOTFILE = self + /boot.shen;
-            buildInputs = [ shen ];
+            buildInputs = [ aski.current ];
           };
 
           mkSpokBranch = name: src:

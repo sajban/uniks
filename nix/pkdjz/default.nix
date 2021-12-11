@@ -5,7 +5,7 @@ let
     bildNvimPlogin = {
       lamdy = import ./bildNvimPlogin;
       modz = [ "pkgs" "pkdjz" ];
-      self = null;
+      src = null;
     };
 
     crate2nix = {
@@ -16,12 +16,18 @@ let
     deryveicyn = {
       lamdy = import ./deryveicyn;
       modz = [ "pkgs" "uyrld" "hob" ];
-      self = null;
+      src = null;
     };
 
     dunst = {
       lamdy = import ./dunst;
       modz = [ "pkgs" ];
+    };
+
+    emacs = {
+      lamdy = import ./emacs;
+      modz = [ "pkdjz" ];
+      src = hob.emacs-overlay.mein;
     };
 
     ementEl = {
@@ -42,25 +48,24 @@ let
     ivalNixos = {
       lamdy = import ./ivalNixos;
       modz = [ "lib" "pkgsSet" ];
-      self = hob.nixpkgs.mein;
+      src = hob.nixpkgs.mein;
     };
 
     kreitOvyraidz = {
       lamdy = import ./kreitOvyraidz;
       modz = [ "pkgs" "lib" ];
-      self = null;
+      src = null;
     };
 
     kynvyrt = {
       lamdy = import ./kynvyrt;
       modz = [ "pkgs" "uyrld" ];
-      self = null;
+      src = null;
     };
 
     lib = {
       lamdy = import ./lib;
-      modz = [ ];
-      self = hob.nixpkgs.mein;
+      src = hob.nixpkgs.mein;
     };
 
     librem5-flash-image = {
@@ -73,13 +78,13 @@ let
     meikPkgs = {
       lamdy = import ./meikPkgs;
       modz = [ "lib" ];
-      self = hob.nixpkgs.mein;
+      src = hob.nixpkgs.mein;
     };
 
     meikImaks = {
       lamdy = import ./meikImaks;
       modz = [ "pkdjz" "hob" ];
-      self = hob.emacs-overlay.mein;
+      src = hob.emacs-overlay.mein;
     };
 
     mfgtools = {
@@ -90,13 +95,13 @@ let
     mkCargoNix = {
       lamdy = import ./mkCargoNix;
       modz = [ "pkgs" "lib" "pkdjz" ];
-      self = null;
+      src = null;
     };
 
     mozPkgs = {
       lamdy = import ./mozPkgs;
       modz = [ "pkdjz" ];
-      self = hob.nixpkgs-mozilla.mein;
+      src = hob.nixpkgs-mozilla.mein;
     };
 
     naersk = {
@@ -107,25 +112,25 @@ let
     nvimLuaPloginz = {
       lamdy = import ./nvimPloginz/lua.nix;
       modz = [ "hob" "pkdjz" ];
-      self = null;
+      src = null;
     };
 
     nvimPloginz = {
       lamdy = import ./nvimPloginz;
       modz = [ "hob" "pkdjz" ];
-      self = null;
+      src = null;
     };
 
     nerd-fonts = {
       lamdy = import ./nerd-fonts;
       modz = [ "pkgs" ];
-      self = null;
+      src = null;
     };
 
     nightlyRust = {
       lamdy = import ./nightlyRust;
       modz = [ "pkdjz" ];
-      self = null;
+      src = null;
     };
 
     nix = { lamdy = import ./nix; };
@@ -133,7 +138,7 @@ let
     nix-dev = {
       lamdy = import ./nix;
       modz = [ "pkgs" "pkdjz" ];
-      self = hob.nix.maisiliym.dev;
+      src = hob.nix.maisiliym.dev;
     };
 
     pkgs = {
@@ -144,7 +149,7 @@ let
     pkgsNvimPloginz = {
       lamdy = import ./pkgsNvimPloginz;
       modz = [ "pkgsSet" "lib" "pkdjz" ];
-      self = hob.nixpkgs.mein;
+      src = hob.nixpkgs.mein;
     };
 
     ql2nix = {
@@ -160,13 +165,13 @@ let
     shen-bootstrap = {
       lamdy = import ./shen/bootstrap.nix;
       modz = [ "pkgs" ];
-      self = hob.shen.mein;
+      src = hob.shen.mein;
     };
 
     shen-ecl-bootstrap = {
       lamdy = import ./shen/ecl.nix;
       modz = [ "pkgs" ];
-      self = null;
+      src = null;
     };
 
     shenPrelude = {
@@ -177,7 +182,7 @@ let
     slynkPackages = {
       lamdy = import ./slynkPackages;
       modz = [ "pkgs" ];
-      self = null;
+      src = null;
     };
 
     uniks = {
@@ -188,7 +193,7 @@ let
     vimPloginz = {
       lamdy = import ./vimPloginz;
       modz = [ "pkgs" "pkdjz" "hob" ];
-      self = null;
+      src = null;
     };
   };
 
