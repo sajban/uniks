@@ -104,8 +104,8 @@ let
     mkElispDerivation {
       inherit name src;
       version = kor.mkStringHash Elisp;
-      ElispDependencies = packagesUsed;
-      ElispBuild = mkImaksModuleEl;
+      elispDependencies = packagesUsed;
+      elispBuild = mkImaksModuleEl;
     };
 
 in

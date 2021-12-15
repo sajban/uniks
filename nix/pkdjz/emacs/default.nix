@@ -43,18 +43,32 @@ let
     { name
     , version
     , src
-    , ElispBuild
-    , ElispDependencies ? [ ]
-    , EmacsExecutable ? (current + /bin/emacs)
-    , ElispSetup ? (writeText "mkElispDerivationSetup.el"
+    , elispBuild
+    , elispDependencies ? [ ]
+    , elnDeps ? [ ]
+    , emacsPackage ? current
+    , emacsExecutable ? (emacsPackage + /bin/emacs)
+    , elispSetup ? (writeText "mkElispDerivationSetup.el"
         (readFile ./mkElispDerivationSetup.el))
     }:
+    let
+      jeisonNativePath = currentPackages.jeison
+        + /share/emacs/native-lisp;
 
+    in
     derivation {
       inherit name version src system
-        ElispDependencies ElispBuild;
-      builder = EmacsExecutable;
-      args = [ "--batch" "--load" ElispSetup ];
+        elispDependencies elispBuild;
+
+      elnDependencies = elnDeps
+        ++ [ currentPackages.jeison ];
+
+      builder = emacsExecutable;
+
+      args = [ "--batch" "--load" elispSetup ];
+
+      PATH = lib.makeBinPath [ pkgs.coreutils ];
+
       __structuredAttrs = true;
     };
 
