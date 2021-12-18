@@ -45,21 +45,43 @@ let
     , src
     , elispBuild
     , elispDependencies ? [ ]
-    , elnDeps ? [ ]
+    , elnDependencies ? [ ]
     , emacsPackage ? current
-    , emacsExecutable ? (emacsPackage + /bin/emacs)
-    , elispSetup ? (writeText "mkElispDerivationSetup.el"
-        (readFile ./mkElispDerivationSetup.el))
     }:
+    let
+      emacsPackages = emacsPackagesFor emacsPackage;
+
+      elispSetup = writeText "setup.el"
+        (readFile ./setup.el);
+
+      mkStructuredDerivation = drv: {
+        inherit (drv) propagatedBuildInputs;
+        result = drv.outPath;
+      };
+
+    in
     derivation {
       inherit name version src system
-        elispDependencies elispBuild;
-      elnDependencies = elnDeps
-        ++ (with currentPackages;
-        [ dash s f jeison ]);
-      builder = emacsExecutable;
-      args = [ "--batch" "--load" elispSetup ];
-      coreutilsPath = lib.makeBinPath [ pkgs.coreutils ];
+        elispDependencies elispBuild elnDependencies;
+
+      elispMkDerivation = writeText "mkDerivation.el"
+        (readFile ./mkDerivation.el);
+
+      setupElnDependencies = with emacsPackages;
+        [ dash jeison ];
+
+      structuredDerivations = map mkStructuredDerivation
+        (with emacsPackages; [ dash jeison ]);
+
+      builder = emacsPackage + /bin/emacs;
+
+      args = [
+        "--no-site-file"
+        "--batch"
+        "--load"
+        elispSetup
+      ];
+
       __structuredAttrs = true;
     };
 
