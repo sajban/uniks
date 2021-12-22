@@ -15,18 +15,26 @@ let
   jsonHyraizynFail = eksportJSON "hyraizyn.json" hyraizyn;
 
   niksRegistry = {
-    flakes = [{
-      from = {
-        type = "indirect";
-        id = "uniks";
-      };
-      to = {
-        type = "github";
-        owner = "maisiliym";
-        repo = "uniks";
-      };
-    }];
     version = 2;
+    flakes = [
+      {
+        from = { type = "indirect"; id = "uniks"; };
+        to = {
+          type = "github";
+          owner = "maisiliym";
+          repo = "uniks";
+        };
+      }
+      {
+        from = { type = "indirect"; id = "uniksNext"; };
+        to = {
+          type = "github";
+          owner = "maisiliym";
+          repo = "uniks";
+          ref = "next";
+        };
+      }
+    ];
   };
 
   redjistri = eksportJSON "niksRegistry.json"

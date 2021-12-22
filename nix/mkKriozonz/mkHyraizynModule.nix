@@ -119,7 +119,7 @@ let
         let astri = exAstriz.${n};
         in
         {
-          hostname = astri.uniksNeim;
+          hostName = astri.uniksNeim;
           sshUser = "niksBildyr";
           sshKey = "/root/.ssh/id_ed25519";
           system = astri.sistym;
@@ -149,10 +149,7 @@ let
 
     in
     {
-      bildyrKonfigz =
-        let
-        in
-        map mkBildyr bildyrz;
+      bildyrKonfigz = map mkBildyr bildyrz;
 
       kacURLz =
         let
@@ -160,16 +157,10 @@ let
         in
         map mkKacURL kacyz;
 
-      exAstrizEseseitcPriKriomz = map
-        (n:
-          exAstriz.${n}.eseseitc
-        )
+      exAstrizEseseitcPriKriomz = map (n: exAstriz.${n}.eseseitc)
         exAstriNeimz;
 
-      dispatcyrzEseseitcKiz = map
-        (n:
-          exAstriz.${n}.eseseitc
-        )
+      dispatcyrzEseseitcKiz = map (n: exAstriz.${n}.eseseitc)
         dispatcyrz;
 
       adminEseseitcPriKriomz = unique
