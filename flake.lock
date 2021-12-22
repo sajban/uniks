@@ -443,6 +443,7 @@
       },
       "original": {
         "owner": "sajban",
+        "ref": "next",
         "repo": "hob",
         "type": "github"
       }
