@@ -45,7 +45,7 @@ in
   };
 
   nix = {
-    package = uyrld.pkdjz.nix;
+    package = pkgs.nixUnstable;
 
     trustedUsers = [ "root" "@nixdev" ];
 
