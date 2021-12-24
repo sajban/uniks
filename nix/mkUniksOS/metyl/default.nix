@@ -137,13 +137,12 @@ in
     thinkfan = mkIf modylIzThinkpad {
       enable = true;
       levels = (if izX230 then [
-        [ 0 0 60 ]
-        [ 1 59 62 ]
-        [ 2 60 64 ]
-        [ 3 61 66 ]
-        [ 6 62 69 ]
-        [ 7 67 85 ]
-        [ 127 80 32767 ]
+        [ 0 0 65 ]
+        [ 1 64 66 ]
+        [ 2 65 67 ]
+        [ 3 66 68 ]
+        [ 6 67 71 ]
+        [ 7 70 85 ]
       ]
       else if izX240 then [
         [ 0 0 55 ]
