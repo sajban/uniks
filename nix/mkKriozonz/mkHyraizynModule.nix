@@ -66,7 +66,7 @@ let
         inherit (inputAstri.priKriomz) niksPriKriom;
 
         uniksNeim = concatStringsSep "."
-          [ astriNeim "astriz" metaUniksNeim ];
+          [ astriNeim metaUniksNeim ];
 
         inherit mycin;
         sistym = arkSistymMap.${mycin.ark};

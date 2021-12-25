@@ -98,7 +98,6 @@
           shen = shen-ecl-bootstrap;
 
           legacyPackages = pkgs;
-          packages = { inherit pkgs; } // uyrld;
           defaultPackage = aski.current;
 
           devShell = pkgs.mkShell {

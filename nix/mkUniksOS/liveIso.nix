@@ -1,6 +1,18 @@
-{ pkgs, lib, hyraizyn, config, kor, nixOSRev, ... }:
+{ pkgs, lib, hyraizyn, config, kor, nixOSRev, konstynts, ... }:
 let
+  inherit (builtins) concatStringsSep;
   inherit (lib) mkOverride;
+  inherit (hyraizyn.astra) uniksNeim;
+  inherit (konstynts.fileSystem.niks) priKriad;
+  nixExec = config.nix.package + /bin/nix;
+
+  bashGenerateNixKriad = concatStringsSep " " [
+    nixExec
+    "key generate-secret --key-name"
+    uniksNeim
+    ">"
+    priKriad
+  ];
 
 in
 {
@@ -14,6 +26,18 @@ in
 
     makeUsbBootable = true;
     makeEfiBootable = true;
+  };
+
+  systemd = {
+    services = {
+      kriadzGeneration = {
+        description = "Generating uniksOS kriadz";
+        wantedBy = [ "multi-user.target" ];
+        serviceConfig = {
+          ExecStart = bashGenerateNixKriad;
+        };
+      };
+    };
   };
 
 }
