@@ -2,7 +2,7 @@
   description = "Uniks";
 
   inputs = {
-    hob.url = github:sajban/hob/next;
+    hob.url = github:sajban/hob;
     UniksCore = {
       url = path:./UniksCore;
       flake = false;

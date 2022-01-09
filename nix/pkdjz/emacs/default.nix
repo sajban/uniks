@@ -1,4 +1,4 @@
-{ system, lib, src, meikPkgs }:
+{ system, lib, src, meikPkgs, hob }:
 let
   inherit (builtins) readFile elem;
   emacs-overlay = src;
@@ -50,6 +50,7 @@ let
     }:
     let
       emacsPackages = emacsPackagesFor emacsPackage;
+      inherit (emacsPackages) trivialBuild;
 
       elispSetup = writeText "setup.el"
         (readFile ./setup.el);
@@ -58,6 +59,16 @@ let
         inherit (drv) propagatedBuildInputs;
         result = drv.outPath;
       };
+
+      species =
+        let src = hob.species-el.mein; in
+        trivialBuild {
+          pname = "species";
+          inherit src;
+          version = src.shortRev;
+          commit = src.rev;
+        };
+
 
     in
     derivation {
@@ -68,7 +79,7 @@ let
         (readFile ./mkDerivation.el);
 
       setupElnDependencies = with emacsPackages;
-        [ dash jeison ];
+        [ species dash jeison ];
 
       structuredDerivations = map mkStructuredDerivation
         (with emacsPackages; [ dash jeison ]);

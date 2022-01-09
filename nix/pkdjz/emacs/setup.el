@@ -2,7 +2,6 @@
 
 (require 'dired)
 (require 'json)
-(require 'eieio)
 
 (defun loadElnFromPackage (packagePath)
   (let*
@@ -19,11 +18,13 @@
     (mapc 'loadElnFile elnFiles)))
 
 (let*
-    ((jsonFile "./.attrs.json")
-     (jsonAList (json-read-file jsonFile))
+    ((jsonFileExists (file-exists-p "./.attrs.json"))
+     (maybeJsonFromFile (when jsonFileExists
+			  (json-read-file "./.attrs.json")))
+     (jsonAList (or maybeJsonFromFile))
      (setupElnDependencies
       (append (cdr (assoc 'setupElnDependencies jsonAList)) nil))
      (elispMkDerivation (cdr (assoc 'elispMkDerivation jsonAList))))
   (mapc 'loadElnFromPackage setupElnDependencies)
   (load-file elispMkDerivation)
-  (make (jeison-read elispDerivationAttrs jsonAList)))
+  (making (jeison-read elispDerivationAttrs jsonAList)))

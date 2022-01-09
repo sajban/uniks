@@ -26,7 +26,7 @@ let
 
     emacs = {
       lamdy = import ./emacs;
-      modz = [ "pkdjz" ];
+      modz = [ "pkdjz" "hob" ];
       src = hob.emacs-overlay.mein;
     };
 
