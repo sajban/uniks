@@ -11,26 +11,28 @@
 (cl-deftype elispPackage () 'stringp)
 (cl-deftype elispPackages () '(vector-of elispPackage))
 
-(defclass elispDerivationAttrs (derivationAttrs)
-  ((elnDependencies :type (vector-of string))
-   (elispBuild :type string)
+(cl-deftype elisp () 'stringp)
+
+(defclass elispDerivation (derivationAttrs)
+  ((elnDependencies :type elispPackages)
+   (elispBuild :type elisp)
    (elispDependencies :type elispPackages)
    (elispMkDerivation :type string)
    (structuredDerivations :type vector)))
 
-(mapc 'jeisonify '(derivationAttrs elispDerivationAttrs))
+(mapc 'jeisonify '(derivationAttrs elispDerivation))
 
 (cl-defmethod makingNativeLoadPath ((elispPackage string))
   (let* ((nativePathSuffix "/share/emacs/native-lisp"))
     (expand-file-name nativePathSuffix elispPackage)))
 
-(cl-defmethod mkLoadPath (elispPackage)
+(cl-defmethod ->loadPath ((elPkg elispPackage))
   (let* ((elispPathSuffix "/share/emacs/site-lisp"))
-    (expand-file-name elispPathSuffix elispPackage)))
+    (expand-file-name elispPathSuffix elPkg)))
 
 (cl-defmethod addingLoadPaths ((elispDependencies vector))
   (let* ((elispLoadPaths
-	  (mapcar 'mkLoadPath elispDependencies))
+	  (mapcar '->LoadPath elispDependencies))
 	 (nativeLoadPaths
 	  (mapcar 'makingNativeLoadPath elispDependencies)))
     (print elispLoadPaths)
@@ -39,10 +41,8 @@
     (setq native-comp-eln-load-path
 	  (append nativeLoadPaths native-comp-eln-load-path))))
 
-(cl-defmethod making ((attrs elispDerivationAttrs))
+(cl-defmethod making ((elDrv elispDerivation))
   (let*
-      ((elispDependencies (oref attrs elispDependencies)))
+      ((elispDependencies (oref elDrv elispDependencies)))
     (addingLoadPaths elispDependencies)
-    (print elispDependencies)
-    (print load-path)
-    (print process-environment)))
+    (print elDrv)))
