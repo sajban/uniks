@@ -5,7 +5,7 @@ let
     listOf attrs;
 
   inherit (metastrizSpiciz) metastriNeimz astriSpiciz
-    magnytiud sistymz komynKrimynOptions mycinSpici IoOptions;
+    magnytiud sistymz komynKrimynOptions machineTypes IoOptions;
 
   astriOptions = {
     neim = mkOption {
@@ -39,7 +39,7 @@ let
     };
 
     mycin = mkOption {
-      type = mycinSpici;
+      type = machineTypes;
     };
 
     yggPriKriom = mkOption {

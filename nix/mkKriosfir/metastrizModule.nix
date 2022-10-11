@@ -4,7 +4,7 @@ let
   inherit (lib) mkOption nameValuePair;
   inherit (lib.types) enum str attrsOf submodule nullOr attrs listOf;
   inherit (config.spiciz) magnytiud metastriNeimz astriSpiciz
-    komynKrimynOptions mycinSpici IoOptions;
+    komynKrimynOptions machineTypes IoOptions;
 
   AstriPriKriomSpici = submodule {
     options = {
@@ -55,7 +55,7 @@ let
       };
 
       mycin = mkOption {
-        type = mycinSpici;
+        type = machineTypes;
       };
 
       io = mkOption {

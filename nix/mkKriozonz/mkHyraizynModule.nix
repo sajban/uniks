@@ -39,16 +39,13 @@ let
 
       rytyrnArkFromMothyrBord = mb: abort "Missing mothyrBord table";
 
-      tcekdArk =
-        if (filteredMycin.ark != null)
-        then filteredMycin.ark
-        else if (filteredMycin.spici == "pod")
-        then astriz.${filteredMycin.ubyrAstri}.mycin.ark
-        else if (filteredMycin.mothyrBord != null)
-        then (rytyrnArkFromMothyrBord filteredMycin.mothyrBord)
+      tcekdArk = with inputAstri.mycin;
+        if (ark != null) then ark
+        else if (spici == "pod") then astriz.${ubyrAstri}.mycin.ark
+        else if (mothyrBord != null) then (rytyrnArkFromMothyrBord mothyrBord)
         else abort "Missing mycin ark";
 
-      mycin = filteredMycin // { ark = tcekdArk; };
+      mycin = inputAstri.mycin // { ark = tcekdArk; };
 
       mkLinkLocalIP = linkLocalIP: with linkLocalIP;
         let

@@ -62,10 +62,12 @@ let
 
   };
 
-  mycinSpici = submodule {
+  machineTypes = enum [ metalMachineType podMachineType ];
+
+  metalMachineType = submodule {
     options = {
       spici = mkOption {
-        type = enum [ "metyl" "pod" ];
+        type = enum [ "metyl" ];
         default = "metyl";
       };
 
@@ -87,6 +89,15 @@ let
       mothyrBord = mkOption {
         type = nullOr (enum mothyrBordSpiciNeimz);
         default = null;
+      };
+    };
+  };
+
+  podMachineType = submodule {
+    options = {
+      spici = mkOption {
+        type = enum [ "pod" ];
+        default = "pod";
       };
 
       ubyrAstri = mkOption {
@@ -134,7 +145,7 @@ in
   };
 
   config.spiciz = {
-    inherit komynKrimynOptions IoOptions mycinSpici kibordz butlodyrz magnytiud
+    inherit komynKrimynOptions IoOptions machineTypes kibordz butlodyrz magnytiud
       metastriNeimz astriSpiciz sistymz;
   };
 
